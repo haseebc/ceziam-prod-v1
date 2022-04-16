@@ -18,7 +18,11 @@ gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.7'
 # Use Redis adapter to run Action Cable in production
-gem 'redis', '~> 4.0'
+
+# Use Redis 4.1
+# gem 'redis', '~> 4.0'
+gem 'redis', '~> 4.1', '>= 4.1.4'
+
 # Use Active Model has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -33,6 +37,28 @@ gem 'devise'
 gem 'autoprefixer-rails', '10.2.5'
 gem 'font-awesome-sass'
 gem 'simple_form', github: 'heartcombo/simple_form'
+
+# Added 16042022
+gem 'bourbon'
+gem 'crack'
+gem 'jquery-rails'
+gem 'json'
+gem 'meta-tags', '~> 2.1'
+gem 'net-scp', '~> 1.2', '>= 1.2.1'
+gem 'net-ssh', '~> 6.1'
+gem 'pygments.rb'
+gem 'redcarpet'
+
+# Sidekiq  downgraded
+# gem 'sidekiq'
+gem 'sidekiq', '~> 5.2.8'
+gem 'sidekiq-cron'
+gem 'sidekiq-failures'
+gem 'sitemap_generator'
+# Gem added 07072020
+gem 'figaro'
+gem 'rubocop', require: false
+
 group :development, :test do  gem 'pry-byebug'
   gem 'pry-rails'
   gem 'dotenv-rails'
@@ -62,3 +88,9 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+# From 2021. Mimemagic was yanked a few days ago https://stackoverflow.com/questions/66919504/your-bundle-is-locked-to-mimemagic-0-3-5-but-that-version-could-not-be-found
+gem 'mimemagic', github: 'mimemagicrb/mimemagic', ref: '01f92d86d15d85cfd0f20dabd025dcbd36a8a60f'
+
+# Added 11 Oct 2021
+gem 'bootstrap'

@@ -1,0 +1,58 @@
+.border-secondary {
+    border-color: #6c757d!important;
+}
+
+.port-card {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background: linear-gradient(to right, #7f7fd5, #86a8e7, #91eae4);
+    background-clip: border-box;
+    border-radius: 8px;
+    height: 600px;
+    margin-bottom: 2%;
+    margin-top: 20px;
+}
+.port-card-text {
+  font-family: 'montserrat', sans-serif;
+  font-weight: 200;
+  color: white;
+}
+
+.term-meaning-text {
+  color: white;
+  text-align: center;
+}
+.port-card-header {
+  font-family: 'montserrat', sans-serif;
+  font-weight: 200;
+  color: white;
+  font-size: 34px;
+  padding: .75rem 1.25rem;
+  margin-bottom: 0;
+  background-color: rgba(0,0,0,.03);
+  border-bottom: 1px solid white;
+}
+
+.port-card-body {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    font-size: 16px;
+}
+
+.port-card-header:first-child {
+    border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+}
+
+.text-secondary {
+    color: white;
+}
