@@ -1,0 +1,108 @@
+.glossary-container{
+    // position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    background: white;
+    margin: auto;
+  }
+  
+  .glossary {
+    height: 70vh;
+    width: 100%;
+  }
+  
+  .purple-summary {
+    position: relative;
+  }
+  
+  .static-logo {
+    height: 65%;
+    width: 20%;
+    margin-left: auto;
+  
+  }
+  
+  .glossary-description {
+  margin: auto;
+  }
+  
+  .table-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 36px;
+    text-align: left;
+    margin-bottom: 8%;
+  }
+  
+  .glossary-header-container {
+    max-width: 50%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+  }
+  
+  .glossary-table {
+    padding: 60px 20px;
+    color: #4F4F4F;
+    width: 90%;
+    // table-layout: auto;
+    word-break: break-all;
+    word-wrap: break-all;
+    table-layout: fixed;
+  }
+  
+  .glossary-th {
+    border-bottom: solid 1px #629280;
+    font-family: 'Varela Round', sans-serif;
+    font-size: 28px;
+    color: #4F4F4F !important;
+    font-weight: 400;
+    text-decoration: none;
+    text-align: left;
+    padding: 10px;
+    word-break: break-all;
+    word-wrap: break-all;
+    width: 200px;
+  }
+  
+  .glossary-td {
+    border-bottom: solid 1px #629280;
+    align-items: center;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 200;
+    color: #4F4F4F;
+    word-break: normal;
+    word-wrap: break-all;
+    text-align: left;
+  }
+  
+  #key-word a {
+    font-size: 28px;
+    color: #4F4F4F !important;
+    font-weight: 200;
+    text-decoration: none;
+  }
+  
+  #key-word:hover {
+    transition: 0.4s;
+    opacity: 0.6;
+  }
+  
+  @media (max-width: 767.98px) {
+    .glossary-table {
+      overflow-x: auto;
+    }
+  
+    .glossary-header-container {
+      max-width: 80%;
+    }
+  
+    .table-title {
+      font-size: 30px;
+      word-break: keep-all;
+    }
+  }

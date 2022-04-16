@@ -1,0 +1,52 @@
+<div class="general-info-container" id="report-banner-3">
+<h3 id="result-full-report">Attack Surface</h3>
+<section>
+<% unless @check.attacksurface.nil? %>
+  <!--for demo wrap-->
+  <div class="tbl-header">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <tr>
+          <th>Index</th>
+          <th>Subdomain</th>
+          <th>IP</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tbody>
+      <% @check.attacksurface["hosts"].each_with_index do |subdomain, index| %>
+      <% if subdomain["ip_address"] %>
+        <tr>
+          <td><%= index %></td>
+          <td><%= subdomain["host"] %></td>
+          <td><%= subdomain["ip_address"] %></td>
+        </tr>
+        <% else %>
+        <tr>
+          <td><%= index %></td>
+          <td><%= subdomain["host"] %></td>
+          <td>Not found</td>
+        </tr>
+        <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<p id="scanned-by"><a href="http://websec.app:8080/<%=@check.hostname%>.json">Download raw attack surface results data in JSON</a></p>
+  <p id="scanned-by">Need some help understanding your data?</p>
+  <div class="buttons-full-report-table">
+    <div>
+      <a href="/dashboard/profile#contact-us-page" class="blue-buttons">Contact Us</a>
+    </div>
+    <div>
+      <p id="or-statement">Or</p>
+    </div>
+    <div>
+    </div>
+  </div>
+  <% end %>
+</section>
+</div>

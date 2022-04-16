@@ -1,0 +1,110 @@
+<div class="container">
+
+<% if user_signed_in?  %>
+  <div class="navbar-wagon">
+    <!-- Logo -->
+    <%= link_to root_path, class: "navbar-wagon-brand" do %>
+      <%= image_tag "logo_small.png", height: 50 %> 
+    <% end %>
+    <!-- Right Navigation -->
+    <div class="navbar-wagon-right hidden-xs hidden-sm">
+        <!-- Login link (when logged out) -->
+        <!-- 
+        <%= link_to t(".sign_in", default: "Login"), new_user_session_path, class: "navbar-wagon-item navbar-wagon-link" %>
+        -->
+      <!-- Once auth fixed then delete all the stuff below -->
+      <!-- Links when logged in -->
+        <%= link_to "Home", root_path, class: "navbar-wagon-item navbar-erikablog-link" %>
+        <%= link_to "Logout", destroy_user_session_path,:method => 'delete', class: "navbar-wagon-item navbar-erikablog-link" %>
+        <!-- Avatar with dropdown menu -->
+        <div class="navbar-wagon-item">
+          <div class="dropdown">
+            <!--<%= image_tag "https://images.unsplash.com/photo-1543458104-7d567484d770?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=55e879ad1f3b096771251f579aaa3b1f&auto=format&fit=crop&w=675&q=80", class: "avatar dropdown-toggle", id: "navbar-wagon-menu", "data-toggle" => "dropdown" %>-->
+            <ul class="dropdown-menu dropdown-menu-right navbar-wagon-dropdown-menu">
+              <li>
+                <%= link_to "#" do %>
+                  <i class="fa fa-user"></i> <%= t(".profile", default: "Profile") %>
+                <% end %>
+              </li>
+              <li>
+                <%= link_to "#" do %>
+                  <i class="fa fa-cog"></i>  <%= t(".settings", default: "Settings") %>
+                <% end %>
+              </li>
+              <li>
+                <%= link_to destroy_user_session_path, method: :delete do %>
+                  <i class="fa fa-sign-out"></i>  <%= t(".sign_out", default: "Log out") %>
+                <% end %>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      
+    </div>
+<% else %>
+
+    <div class="navbar-ceziam">
+    <!-- Logo -->
+    <%= link_to root_path, class: "navbar-wagon-brand" do %>
+    <%= image_tag "logo_small.png", height: 50, width: 50 %>
+    <% end %>
+
+    <!-- Right Navigation -->
+    <!-- Hide on sm and xs screens -->
+    <div class="navbar-wagon-right d-none d-sm-block d-sm-none d-md-block">
+        <!-- Hide on sm and xs screens -->
+        <!-- Login link (when logged out) -->
+      <!-- Once auth fixed then delete all the stuff below -->
+      <!-- Links when logged in -->
+        <%= link_to "How it works", root_path, class: "px-3 text-section-navbar" %>
+        <!-- <%= link_to "Success stories", root_path, class: "navbar-wagon-item navbar-lab-link" %>-->
+        <%= link_to "With and Without", root_path, class: "px-3 text-section-navbar" %>
+        <%= link_to "Pricing", root_path, class: "px-3 text-section-navbar" %>
+        <%= link_to t(".sign_in", default: "Login"), new_user_session_path, class: "px-3 text-section-navbar btn btn-light" %>
+        <%= link_to "Try it FREE", root_path, class: "px-3 text-section-navbar-try btn btn-dark" %>
+        <!-- Avatar with dropdown menu Not Used Here -->
+        <!-- but could be super useful by Haseeb 23 May 2021 -->
+        <div class="navbar-wagon-item">
+            <div class="dropdown">
+            <!--<%= image_tag "https://images.unsplash.com/photo-1543458104-7d567484d770?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=55e879ad1f3b096771251f579aaa3b1f&auto=format&fit=crop&w=675&q=80", class: "avatar dropdown-toggle", id: "navbar-wagon-menu", "data-toggle" => "dropdown" %>-->
+            <!--<ul class="dropdown-menu dropdown-menu-right navbar-wagon-dropdown-menu">
+              <li>
+                <%= link_to "#" do %>
+                  <i class="fa fa-user"></i> <%= t(".profile", default: "Profile") %>
+                <% end %>
+              </li>
+              <li>
+                <%= link_to "#" do %>
+                  <i class="fa fa-cog"></i>  <%= t(".settings", default: "Settings") %>
+                <% end %>
+              </li>
+              <li>
+                <%= link_to destroy_user_session_path, method: :delete do %>
+                  <i class="fa fa-sign-out"></i>  <%= t(".sign_out", default: "Log out") %>
+                <% end %>
+              </li>
+            </ul>-->
+            </div>
+        </div> 
+    </div>
+<% end %>
+<!-- Dropdown list appearing on mobile only -->
+  <div class="navbar-wagon-item d-block d-sm-none d-none d-sm-block d-md-none">
+    <div class="dropdown">
+      <i class="fa fa-bars dropdown-toggle" data-toggle="dropdown"></i>
+      <ul class="dropdown-menu dropdown-menu-right navbar-erikablog-dropdown-menu">
+        <li><%= link_to "Our work", root_path, class: "navbar-wagon-item navbar-lab-link" %></li>
+        <!--<li><%= link_to "Success stories", root_path, class: "navbar-wagon-item navbar-lab-link" %></li>-->
+        <li><%= link_to "Services", root_path, class: "navbar-wagon-item navbar-lab-link" %></li>
+        <li><%= link_to "Prices", root_path, class: "navbar-wagon-item navbar-lab-link" %></li>
+        <li><%= link_to "Events", root_path, class: "navbar-wagon-item navbar-lab-link" %></li>
+ 
+        <li><%= link_to "Contact", root_path, class: "navbar-wagon-item navbar-lab-link" %></li> 
+      </ul>
+    </div>
+  </div>
+  
+</div>
+
+</div>

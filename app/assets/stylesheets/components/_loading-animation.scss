@@ -1,0 +1,183 @@
+@import "bourbon";
+
+.button-loader-container {
+  position: relative;
+  height: 30%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.container-animation{
+  z-index: 9999;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  margin: auto;
+}
+
+.disclamer {
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  font-weight: 200;
+  font-size: 12px;
+  color: white;
+}
+
+// .loading-percentage {
+//   z-index: 9999;
+//   position: absolute;
+//   width: 150px;
+//   height: 150px;
+//   left: 120px;
+//   right: 0;
+//   margin: auto;
+// }
+
+/// border-gradient mixin: ///
+
+@mixin border-gradient($from, $to, $weight: 0) {
+  $mix-main: mix($from, $to);
+  $mix-sub-from: mix($mix-main, $from);
+  $mix-sub-to: mix($mix-main, $to);
+
+  box-shadow: 0 2px 0 $weight rgba($mix-sub-to, .75),
+              0 -2px 0 $weight rgba($mix-sub-from, .25),
+              2px 0 0 $weight rgba($mix-sub-to, .25),
+              -2px 0 0 $weight  rgba($mix-sub-from, .25),
+              2px -2px 0 $weight rgba($mix-main, .5),
+              -2px 2px 0 $weight rgba($mix-main, .5),
+              2px 2px 0 $weight rgba($to, .75),
+              -2px -2px 0 $weight rgba($from, .75);
+}
+
+/// BASIC EXAMPLE ///
+
+.circle {
+  @include size(50px);
+
+  border-radius: 100%;
+
+  @include border-gradient(red, yellow);
+}
+
+////////////// OTHER EXAMPLES ////////////////
+
+
+.circle {
+  &:nth-of-type(2) {
+    @include border-gradient(skyblue, hotpink);
+
+    animation: rotateThis 1s linear infinite;
+  }
+
+  &:nth-of-type(3) {
+    @include border-gradient(#E14847, #B53BB4);
+  }
+
+  &-multiple { @include size(100px); }
+
+  &-multiple & {
+    @include position(absolute, 0px 0px 0px 0px);
+    margin: auto;
+
+    &:nth-of-type(1) { animation: psycho 2s linear infinite; }
+    &:nth-of-type(2) { animation: psycho 2s linear .1s infinite; }
+    &:nth-of-type(3) { animation: psycho 2s linear .25s infinite; }
+  }
+
+}
+
+@keyframes rotateThis {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes psycho {
+  0% {
+    transform: rotate(0deg) scale(1) translate(0, 0);
+  }
+
+  33% {
+    transform: rotate(360deg) scale(1) translate(5px, 5px);
+  }
+
+  66% {
+    transform: rotate(720deg) scale(1) translate(-5px, -5px);
+  }
+
+  100% {
+    transform: rotate(1080deg) scale(1) translate(0, 0);
+  }
+}
+
+
+
+// .btn {
+//   border: none;
+//   display: inline-block;
+//   background: transparent;
+
+//   color: rgba(white, .7);
+//   background: rgba(white, .05);
+//   text-decoration: none;
+
+//   padding: 15px 20px;
+
+//   border-radius: 10px;
+
+//   transition: all .2s;
+
+//   @include border-gradient(gray, darkgray);
+
+//   &:hover {
+//     @include border-gradient(hotpink, skyblue);
+//     color: white;
+//     background: rgba(skyblue, .05);
+//   }
+// }
+
+.start-screen {
+  display: flex;
+  justify-content: center;
+  flex-flow: nowrap column;
+  align-items: center;
+  min-height: 100%;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 24px;
+  color: white;
+  opacity: 0.8;
+}
+.loading {
+  display: flex;
+  margin: 24px 0;
+}
+.loading__element {
+  font: normal 100 2rem/1 Roboto;
+  letter-spacing: .5em;
+}
+
+@for $i from 1 through 15 {
+  $delay: percentage($i);
+  .el#{$i} {
+    animation-delay: $delay / 1000% + s;
+  }
+}
+
+@keyframes bouncing {
+  0%, 100% {
+    transform: scale3d(1,1,1);
+  }
+  50% {
+    transform: scale3d(0,0,1);
+  }
+}

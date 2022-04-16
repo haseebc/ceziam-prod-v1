@@ -1,0 +1,64 @@
+<!-- This Navabar is from codepen, uses CSS, HTML and JS. 
+https://codepen.io/taniarascia/pen/dYvvYv 
+The write up is here 
+https://www.taniarascia.com/responsive-dropdown-navigation-bar/
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+          <!-- Google result text-->
+        <title>Ceziam - The cloud based toolkit that helps you secure what you build.</title>
+        <%= favicon_link_tag 'favicon.ico' %>
+        <%= javascript_pack_tag 'testingjs' %>    
+    </head>
+  <body>
+
+<div class="navigation">
+  <div class="nav-container">
+    <div class="brand">
+          <%= link_to root_path, class: "navbar-wagon-brand" do %>
+      <%= image_tag "logo_small.png", height: 50 %> 
+    <% end %>
+    </div>
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list text-section-navbar">
+        <li>
+          <a href="#!">How it works</a>
+        </li>
+        <li>
+          <a href="#!">With and Without</a>
+        </li>
+        <li>
+          <a href="#!">Pricing</a>
+          <ul class="nav-dropdown">
+            <li>
+              <a href="#!">Web Design</a>
+            </li>
+            <li>
+              <a href="#!">Web Development</a>
+            </li>
+            <li>
+              <a href="#!">Graphic Design</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="#!">Login</a>
+        </li>
+        <li>
+          <a href="#!">Try it FREE</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+
+
+
+
+
+  </body>
+</html>
+

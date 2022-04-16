@@ -1,0 +1,27 @@
+<div class="general-info-container-vuln" id="report-banner-2">
+    <div class="risks-title vuln" id="result-full-report">Dangerous Ports</div>
+    <br>
+    <div class="container">
+        <div class="row">
+        <% @check.vulnerabilities.each do |vuln| %>
+            <div class="col-xs-12  col-sm-4">
+                <div class="port-card border-secondary mb-3">
+                    <div class="port-card-header">Port: <%= vuln.port %></div>
+                    <div class="port-card-body text-secondary">
+                        <h5 class="port-card-text"><strong>Netrisk:</strong> <%= vuln.netrisk %>%</h5>
+                        <p class="port-card-text"><strong>State:</strong> <%= vuln.state %></p>
+                        <p class="port-card-text"><strong>Protocol:</strong> <%= vuln.protocol %></p>
+                        <p class="port-card-text"><strong>Service:</strong> <%= vuln.service %></p>
+                        <p class="port-card-text"><strong>Reason:</strong> <%= vuln.reason %></p>
+                        <strong><p class="port-card-text"><strong>Weakness:</strong> <%= vuln.weakness %></p></strong>
+                        <p class="port-card-text"><strong>Risk:</strong> <%= vuln.risk %></p>
+                        <p class="port-card-text"><strong>Recommandation:</strong> <%= vuln.recommandation %></p>
+                    </div>
+                    <p class="port-card-text term-meaning-text"><strong>Not sure of what this means?</strong></p>
+                    <a href="/pages/glossary#glossary-anchor" class="button-glossary">Go to Glossary</a>
+                </div>
+            </div>
+        <% end %>
+        </div>
+    </div>
+</div>

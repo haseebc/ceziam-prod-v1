@@ -1,0 +1,63 @@
+<!-- SEO Meta-tags -->
+<% set_meta_tags title: 'Full report',
+              description: 'Here you will find all the information related to your website security and your attack surface that we have detected.' %>
+
+<% if @check.completed? %>
+
+<div class="card-container full-report-page">
+  <div class="banner-green glossary">
+    <%= render 'shared/navbar' %>
+    <%= render 'shared/page-description' %>
+  </div>
+  <div class="general-info-container" id="report-banner-1">
+    <%= render 'shared/report-title' %>
+  <div class="data-container">
+    <div class="risk-chart">
+      <%= render 'shared/port-risks-calc' %>
+      <%= render 'shared/report-progress-circle' %>
+    </div>
+    <div class="wrapper-clock margin-graph">
+      <% if @check.duration %>
+        <div class="style-clock"><%= @check.duration %> s
+          <% else %>
+          <div class="style-clock"><%= @check.scandur %> s
+            <% end %>
+            <div class="scan-duration">Detection Time</div>
+          </div>
+        </div>
+      <% unless @check.attacksurface.nil? %>
+      <%= render 'shared/attacksurface-calc-circle' %>
+      <% end %>
+      <%= render 'shared/ipaddrs-calc-circle' %>
+    </div>
+    <div class="circle-description-container">
+      <%= render 'shared/descrp-circle' %>
+    </div>
+  </div>
+<%= render 'shared/table-dangerous-ports' %>
+<%= render 'shared/table-attack-surface' %>
+
+  <div class="orange-vector" style="background-image: url(<%= image_path('purple-vector.png') %>);">
+  </div>
+</div>
+
+
+<script>
+$(window).on("load resize ", function() {
+  var scrollWidth = $('.tbl-content').width() - $('.tbl-content table').width();
+  $('.tbl-header').css({'padding-right':scrollWidth});
+}).resize();
+</script>
+
+<% else %>
+
+<%= render 'shared/loading' %>
+
+<script>
+    setTimeout(function(){
+      window.location.reload(1);
+    }, 30000);
+</script>
+
+<% end %>
+
