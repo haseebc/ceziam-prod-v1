@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get 'launch', to: 'pages#launch'
   devise_for :users, controllers: { registrations: 'registrations' }
 
-  root to: 'pages#landing'
+  root to: 'pages#home'
 
   resources :checks do
     resources :vulnerabilities, only: %i[new create]
