@@ -1,0 +1,48 @@
+<!-- SEO Meta-tags -->
+<% set_meta_tags title: 'Cyber-security checker',
+                description: 'Detect your core cyber security risks including dangerous ports and attack surface with a simple website freely available to all.' %>
+
+<div class="banner-green">
+    <%= render 'shared/navbar' %>
+    <div class="header-description">
+        <h1><p class="header-title">Welcome to Ceziam</p></h1>
+        <h2><p class="page-description">Detect your core cyber security risks with a simple website freely available to all.</p><h2>
+        <form id="search" action="/checks#report-banner-1" method="post">
+        <div>
+            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+            <input class="string required" id="check-start" maxlength="255" name="hostname" size="50" type="text" placeholder="Insert your hostname e.g. bbc.com" autocomplete="off"/> 
+        </div>
+        
+        <div class="button-loader-container">
+            <input class="button-white" id="button-banner" name="commit" type="submit" value="Detect" />
+            <div class="container-animation">
+                <div class="circles" id="loading-symbol" hidden>
+                    <div class="circle-multiple">
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="start-screen">
+                            <div class="loading">
+                                            <div class="loading__element el1">D</div>
+                                            <div class="loading__element el2">E</div>
+                                            <div class="loading__element el3">T</div>
+                                            <div class="loading__element el4">E</div>
+                                            <div class="loading__element el5">C</div>
+                                            <div class="loading__element el6">T</div>
+                                            <div class="loading__element el7">I</div>
+                                            <div class="loading__element el8">N</div>
+                                            <div class="loading__element el9">G</div>
+                                            <div class="loading__element el13">.</div>
+                                            <div class="loading__element el14">.</div>
+                                            <div class="loading__element el15">.</div>  
+                            </div>
+                        </div>
+                        <p class="disclamer">This could take up to 2 minutes...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+        <a href="#card-1" class="thin-buttons scroll">Learn More</a>
+    </div>
+</div>   
