@@ -58,6 +58,8 @@ gem 'sitemap_generator'
 # Gem added 07072020
 gem 'figaro'
 gem 'rubocop', require: false
+# Gem added 18042022
+gem 'cloudinary', '~> 1.12.0'
 
 group :development, :test do  gem 'pry-byebug'
   gem 'pry-rails'
