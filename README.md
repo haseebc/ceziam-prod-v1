@@ -634,3 +634,346 @@ git branch -d develop
 ```
 The -d means delete.
 
+# **Technical Solution Design: SIEM Productionisation**
+- [Overview](#TechnicalSolutionDesign:SIEMProductionisation-Overview) 
+  - [SOC](#TechnicalSolutionDesign:SIEMProductionisation-SOC)
+  - [Scope](#TechnicalSolutionDesign:SIEMProductionisation-Scope) 
+    - [In Scope](#TechnicalSolutionDesign:SIEMProductionisation-InScope)
+    - [Out of Scope](#TechnicalSolutionDesign:SIEMProductionisation-OutofScope)
+- [Requirements](#TechnicalSolutionDesign:SIEMProductionisation-Requirements) 
+  - [Deployment](#TechnicalSolutionDesign:SIEMProductionisation-Deployment) 
+    - [Documentation](#TechnicalSolutionDesign:SIEMProductionisation-Documentation)
+  - [Use cases](#TechnicalSolutionDesign:SIEMProductionisation-Usecases) 
+    - [Documentation](#TechnicalSolutionDesign:SIEMProductionisation-Documentation.1)
+  - [Log sources](#TechnicalSolutionDesign:SIEMProductionisation-Logsources) 
+    - [Documentation](#TechnicalSolutionDesign:SIEMProductionisation-Documentation.2)
+  - [Build View Dashboard](#TechnicalSolutionDesign:SIEMProductionisation-BuildViewDashboard)
+- [Architecture](#TechnicalSolutionDesign:SIEMProductionisation-Architecture)
+- [PoC Sentinel Build](#TechnicalSolutionDesign:SIEMProductionisation-PoCSentinelBuild) 
+  - [Manual Configuration](#TechnicalSolutionDesign:SIEMProductionisation-ManualConfiguration)
+  - [Connecting Zscaler](#TechnicalSolutionDesign:SIEMProductionisation-ConnectingZscaler) 
+    - [Network Diagram of Zscaler configuration](#TechnicalSolutionDesign:SIEMProductionisation-NetworkDiagramofZscalerconfiguration)
+  - [MS Defender365](#TechnicalSolutionDesign:SIEMProductionisation-MSDefender365) 
+    - [Sandbox Test Lab](#TechnicalSolutionDesign:SIEMProductionisation-SandboxTestLab)
+  - [AsCode Deployment Configuration](#TechnicalSolutionDesign:SIEMProductionisation-AsCodeDeploymentConfiguration) 
+    - [Deploying Arm Templates using Terraform](#TechnicalSolutionDesign:SIEMProductionisation-DeployingArmTemplatesusingTerraform)
+  - [Log Analysis](#TechnicalSolutionDesign:SIEMProductionisation-LogAnalysis) 
+    - [Reduce data that is been sent/injected by Sentinel](#TechnicalSolutionDesign:SIEMProductionisation-Reducedatathatisbeensent/injectedbySentinel) 
+      - [At the source level](#TechnicalSolutionDesign:SIEMProductionisation-Atthesourcelevel)
+      - [At ingestion time](#TechnicalSolutionDesign:SIEMProductionisation-Atingestiontime)
+    - [How to View ingested Logs](#TechnicalSolutionDesign:SIEMProductionisation-HowtoViewingestedLogs)
+  - [Data Retention options](#TechnicalSolutionDesign:SIEMProductionisation-DataRetentionoptions)
+- [Design Decisions](#TechnicalSolutionDesign:SIEMProductionisation-DesignDecisions)
+- [Risks / Issues](#TechnicalSolutionDesign:SIEMProductionisation-Risks/Issues)
+- [Definitions](#TechnicalSolutionDesign:SIEMProductionisation-Definitions)
+- [References](#TechnicalSolutionDesign:SIEMProductionisation-References)
+# **Overview**
+Overview of solution/Business case
+
+Objective is to have some monitoring/detection/alerting capabilities in our SIEM Sentinel
+Requirements for version 0.1.
+### **SOC**
+The Unilabs SOC will be **a centralized command center for Unilabs cybersecurity needs**. It is a 24/7 capability staffed with cybersecurity experts (MSSP) to monitor our security posture and identify potential threats real-time. The most important purpose of the SOC is to centralize all cybersecurity operations.
+## **Scope**
+### **In Scope**
+- Log ingestion into a central Sentinel instance
+- Secure transport of log events 
+- All required Sentinel components 
+- Use or required security controls in Azure for instance Appln Gateway WAF and Azure NSGs
+- DevOps process followed 
+- Definition and implementation of uses cases
+- Documentation 
+### **Out of Scope**
+- Alert management. 
+- Full SOC capability with associated workflow
+# **Requirements**
+## **Deployment**
+DevOps process followed (Terraform, MS GitHub repo, Merge, Deploy into Azure). Infrastructure as code. the justification being manual changes kept to a minimum, one stable repo in organization and we can then at a later stage perform security policy as code.
+#### **Documentation** 
+Documentation detailing how DevOps deployment is performed is required.
+## **Use cases**
+Development of basic uses case associated with integrated log sources. For instance: multiple account logons failed, malware detected in multiple endpoints, connection allowed to malicious website among others.
+#### **Documentation** 
+Documentation detailing use case logic is required. The documentation should include comprehensive information for troubleshooting use cases.
+## **Log sources**
+Following log sources should be transferred securely into Sentinel.
+
+- Active Directory events 
+- Cynet events
+- Office 365 evets into Sentinel
+- Zscaler logs
+
+Verification of data ingestion and parsing is required.
+#### **Documentation** 
+Documentation detailing log sources configuration is required. The documentation should include comprehensive information for troubleshooting log sources issues and replicate integration in new environments. 
+## **Build View Dashboard**
+Basic view of logs that have been generated from different log sources
+# **Architecture**
+A possible architecture is detailed below. Please note this is only a first iteration.
+
+![](Aspose.Words.431f63cc-8cb8-485d-b05d-9c0bc23cb5af.001.png) 
+
+Deployement as code using terraform
+
+resource "azurerm\_log\_analytics\_solution" "la-opf-solution-sentinel" {
+
+`  `solution\_name         = "SecurityInsights"
+
+`  `location              = "${azurerm\_resource\_group.rgcore-example-management.location}"
+
+`  `resource\_group\_name   = "${azurerm\_resource\_group.rgcore-example-management.name}"
+
+`  `workspace\_resource\_id = "${azurerm\_log\_analytics\_workspace.rgcore-management-la.id}"
+
+`  `workspace\_name        = "${azurerm\_log\_analytics\_workspace.rgcore-management-la.name}"
+
+`  `plan {
+
+`    `publisher = "Microsoft"
+
+`    `product   = "OMSGallery/SecurityInsights"
+
+`  `}
+
+}
+# **PoC Sentinel Build**
+## **Manual Configuration**
+
+|**Step #**|**Activity**|**Details**|**What we did 110822**|
+| :-: | :-: | :-: | :-: |
+|1|Prerequisites|<p>To enable Microsoft Sentinel, you need **contributor** permissions to the subscription </p><p>To use Microsoft Sentinel, you need either **contributor** or **reader** permissions on the resource group </p>|<p>- Create sentinal</p><p>- Add workspace to Sentinal “WEu T VM LOG1”</p><p>- Trial for 11th Sept 2022</p><p>- Click Ok</p>|
+|2 |Test syslog source|Deploy a test VM in a test resource group <br>ssh key for auth<br>West Europe (Zone 1)<br>Disk B1s general purpose<br>Linux (ubuntu 20.04)||
+|3|Configure syslog source|<p>1. From the Microsoft Sentinel navigation menu, select Data connectors.</p><p>2. From the connectors gallery, select Syslog and then select Open connector page.</p><p>3. Select the Download & install agent for Azure Linux Virtual machines </p>|<p>- selected Azure AD to connector </p><p>- selected all configuration options</p><p>- Connectot</p><p>- Office 365 Exchange and Teams added</p>|
+|4|Log analytics agent |Linux Appliance<br>Log onto portal, select Microsoft Sentinal, Create a workspace||
+|5|Configure log analytics agent |<p>MS native data connection</p><p>1. From the Microsoft Sentinel navigation menu, select Data connectors.</p><p>2. Select a data connector, and then select the Open connector page button.</p><p>3. The connector page shows instructions for configuring the connector, and any other instructions that may be necessary.</p><p>For example, if you select the Azure Active Directory data connect to</p>||
+||||**What was done 310822**|
+|6|Connecting Zscaler|<p>**VM Data Connector Deployed**</p><p>*Subscription<br>AzureSimple for Unilabs Group Services<br>Resource group<br>WEu-P-SecurityAdmin-RG1<br>Virtual machine name<br>WEu-P-Sent-SRV1<br>Region<br>West Europe<br>Availability options<br>Availability zone<br>1<br>Ubuntu Server 18.04 LTS - Gen2<br>SSH public key<br>azureuser<br>WEu-P-sent\_srv1<br>Virtual network<br>WEu-P-SecurityAdmin-RG1-vnet<br>Subnet<br>default (10.3.0.0/24)<br>Public IP<br>WEu-P-Sent-SRV1-ip*</p>||
+|||<p>**VM Data Connector** **NSG**</p><p>interface [weu-p-sent-srv1422_z1](https://portal.azure.com/)</p><p>Allow Tcp 514 inbound any </p>||
+||||**What was done 040922**|
+|7|Nanolog Streaming Service (NSS)<br>prerequisites|Get pre requisites met from <br>Sery get instructions, certs and secret token for .vhd file||
+||NSS storage account reaction|<p>1. create storage account<br>   create blob storage<br>   zsnssdeployment<br>   for copying VHD files from Zscaler storage acc<br>   TEMPLATE <br>   <https://secengsentnssstorageacc1.blob.core.windows.net/zsnssdeployment/znss_5_0_eu_osdisk.vhd></p><p>zsnssprod</p><p><https://zsprodeu.blob.core.windows.net/?sv=2019-02-02&ss=b&srt=sco&sp=rl&se=2023-03-12T09:14:30Z&st=2020-03-12T00:14:30Z&spr=https&sig=u5yagWaZdC343ZOcFkefwKTrkNT07Gs3qx3Y3YeCda0%3D><br>CORRECT this was used to create the blob</p>||
+||Creating the 2 network interfaces and a public IP in Azure|<p>create net interface<br>For mgmt traffic<br>weu-p-sent-nssmgmt<br>resource group<br>WEu-P-SecurityAdmin-RG1<br>10.3.0.10<br>Virtual network/subnet<br>WEu-P-SecurityAdmin-RG1-vnet/default</p><p>create net interface<br>For syslog traffic<br>weu-p-sent-nsssrvc<br>resource group<br>WEu-P-SecurityAdmin-RG1<br>10.3.0.11<br>Virtual network/subnet<br>WEu-P-SecurityAdmin-RG1-vnet/default<br>owner<br>securityeng<br>project<br>sentinel</p><p>Public IP<br>WEu-P-Sent-nssmgmt-ip<br>20.224.8.145<br>Associated to<br>weu-p-sent-nssmgmt</p>||
+||Create code for deployment|<p>name=AzureNSS</p><p>location=westeurope</p><p>rgname=WEu-P-SecurityAdmin-RG1</p><p>createrg=n</p><p>storename=secengsentnssstorageacc1</p><p>createstorage=n</p><p>vnetname=WEu-P-SecurityAdmin-RG1-vnet</p><p>vnetprefix=10.3.0.0/16</p><p>mgmtsubnetname=default</p><p>mgmtsubnetprefix=10.3.0.0/24</p><p>svcsubnetname=default</p><p>svcsubnetprefix=10.3.0.0/24</p><p>niccount=2</p><p>vmsize=Standard\_A4\_v2</p><p>dstStorageURI=https://secengsentnssstorageacc1.blob.core.windows.net</p><p>dstContainer=zsnssprod</p><p>srcOsURI=https://secengsentnssstorageacc1.blob.core.windows.net/zsnssdeployment/znss\_5\_0\_eu\_osdisk.vhd</p>||
+||Deploy in Azure|launch the script<br>./deployment\_script.ps1 config\_file.txt||
+||Security|<p>Change root pw</p><p><zsroot@20.107.6.93></p><p>Strong password applied.</p>||
+||Install certificates|<p>[zsroot@NSS ]:-$sudo nss install-cert NssCertificate.zip</p><p>Password:</p><p>Detected an Azure VM!!</p><p>Certificates successfully installed</p><p>[zsroot@NSS ]:-$sudo nss dump-config</p><p>Detected an Azure VM!!</p><p>/sc/conf/sc.conf does not exist</p><p>Configured Values:</p><p>`	`CloudName:zscaler.net</p><p>`	`nameserver:168.63.129.16	</p><p>`	`smnet\_dev:</p><p>`	`Default gateway for Service IP:</p><p>`	`Routes for Siem N/w:</p><p>[zsroot@NSS ]:-$</p>||
+||NSS VM network change|<p>zsroot@20.107.6.93</p><p>`	`Enter the command sudo nss configure</p><p>`	 `service interface IP address with netmask</p><p>`	`Did the following changes 	 </p><p>`	`[zsroot@NSS ]:-$sudo nss configure</p><p>Password:</p><p>Detected an Azure VM!!</p><p>nameserver:168.63.129.16 (Options <c:change, d:delete, n:no change>) [n]</p><p>Do you wish to add a new nameserver? <n:no y:yes> [n]: </p><p>smnet\_dev (Service interface IP address with netmask) []: 10.3.0.6</p><p>Please re-enter netmask after IP address: (Ex.1.2.3.4/24)</p><p>smnet\_dev (Service interface IP address with netmask) []: 10.3.0.6/24</p><p>smnet\_dflt\_gw (Service interface default gateway IP address) []: 10.3.0.1</p><p>Successfully Applied Changes</p><p>[zsroot@NSS ]:-$</p>||
+||Updates and check connectivity to central command and control server|<p>[zsroot@NSS ]:-$sudo nss update-now</p><p>Password:</p><p>Connecting to server...</p><p>Downloading latest version</p><p>Installing build /sc/smcdsc/nss\_upgrade.sh</p><p>Finished installation!</p><p>[zsroot@NSS ]:-$sudo nss checkversion</p><p>Connecting to server...</p><p>Connecting to update server 104.129.195.114.</p><p>Installed build version: 329792</p><p>Latest available build version: 329792</p><p>[zsroot@NSS ]:-$sudo nss start</p><p>Detected an Azure VM!!</p><p>NSS service running with pid 1606</p><p>[zsroot@NSS ]:-$sudo nss enable-autostart</p><p>Password:</p><p>Detected an Azure VM!!</p><p>Auto-start of NSS enabled </p><p>[zsroot@NSS ]:-$sudo nss troubleshoot netstat|grep tcp</p><p>//+SHARED MEMORY KEY 17 (/sc/)</p><p>tcp          0(  0%)        0(  0%) 10.3.0.6.7422          104.129.195.85.443    ESTABLISHED</p><p>[zsroot@NSS ]:-$</p>||
+||Deploy NSGs to newly created VMS|Deployed to NSS VM public interface||
+||Zscaler change made by Sergy|Zscaler command and control update with IP of SIEM and port||
+||Add connector to Azure|<p>From Azure sentinel click connect Azure connector choosing Zscaler </p><p>Instal CEF connector</p><p>sudo wget -O cef\_installer.py https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef\_installer.py&&sudo python cef\_installer.py 6a5d5fba-6562-4ec7-84b3-cfccddc3489b 0jXXRObjN5oTArSTxTErd8Ckpt4Efd0ETiNsodWt6USKJDwDGDLddDYBFbds8DiJvKCdiStcAzAeIA/ZyxcN5A==</p>||
+||Validation|<p>Validate the connection</p><p>sudo wget -O cef\_troubleshoot.py https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef\_troubleshoot.py&&sudo python cef\_troubleshoot.py  6a5d5fba-6562-4ec7-84b3-cfccddc3489b</p>||
+||Confirm logs received|<p>Check for logs on the Data connector VM</p><p>tcpdump -A -ni any port 25226 -vv</p>||
+## **Connecting Zscaler**
+### **Network Diagram of Zscaler configuration**
+![](Aspose.Words.431f63cc-8cb8-485d-b05d-9c0bc23cb5af.002.png) 
+## **MS Defender365**
+Defender365 as a log source has been added. All sources were included as detailed below.
+
+Name
+
+Description
+
+DeviceInfo
+
+Machine information (including OS information)
+
+DeviceNetworkInfo
+
+Network properties of machines
+
+DeviceProcessEvents
+
+Process creation and related events
+
+DeviceNetworkEvents
+
+Network connection and related events
+
+DeviceFileEvents
+
+File creation, modification, and other file system events
+
+DeviceRegistryEvents
+
+Creation and modification of registry entries
+
+DeviceLogonEvents
+
+Sign-ins and other authentication events
+
+DeviceImageLoadEvents
+
+DLL loading events
+
+DeviceEvents
+
+Additional events types
+
+DeviceFileCertificateInfo
+
+Certificate information of signed files
+
+Microsoft Defender for Office 365 (5/5 connected)​
+
+Name
+
+Description
+
+EmailEvents
+
+Office 365 email events, including email delivery and blocking events
+
+EmailUrlInfo
+
+Information about URLs on Office 365 emails
+
+EmailAttachmentInfo
+
+Information about files attached to Office 365 emails
+
+EmailPostDeliveryEvents
+
+Security events that occur post-delivery, after Office 365 has delivered an email message to the recipient mailbox
+
+UrlClickEvents
+
+Events involving URLs clicked, selected, or requested on Microsoft Defender for Office 365
+
+Microsoft Defender for Cloud Apps (1/1 connected)​
+
+Name
+
+Description
+
+CloudAppEvents
+
+Events involving accounts and objects in Office 365 and other cloud apps and services
+
+Microsoft Defender for Identity (3/3 connected)​
+
+Name
+
+Description
+
+IdentityLogonEvents
+
+Authentication activities made through your on-premises Active Directory
+
+IdentityQueryEvents
+
+Information about queries performed against Active Directory objects
+
+IdentityDirectoryEvents
+
+Captures various identity-related events
+
+Microsoft Defender Alert Evidence (1/1 connected)​
+
+Name
+
+Description
+
+AlertEvidence
+
+Files, IP addresses, URLs, users, or devices associated with alerts.
+### **Sandbox Test Lab**
+Sandbox Connection to non Unilabs environment
+
+ssh -i /Users/haseebchaudhary/code/Cloud/azure/sentineltest\_key.pem azureuser@20.86.2.219
+## **AsCode Deployment Configuration**
+### **Deploying Arm Templates using Terraform**
+This is generally a very bad idea should be only used as a last resort, explained in [here](https://docs.microsoft.com/en-us/azure/sentinel/detect-threats-custom).
+## **Log Analysis**
+### **Reduce data that is been sent/injected by Sentinel**
+#### **At the source level**
+Go the CEF agent and filter unnecessary evets. This will block data to arrive to LA WS and highly recommended for noisy/unrelated data.
+
+![](Aspose.Words.431f63cc-8cb8-485d-b05d-9c0bc23cb5af.003.png) 
+
+So in the Simpler example you see they filter out events of service user (svc-)
+
+Youtub with demo: [Azure Sentinel webinar: Log forwarder deep dive on filtering CEF and syslog events - YouTube](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DbHw8BkEpYzs&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7C7843da3d315c4e7456ef08da956a0011%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637986579758910924%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=Cnvnn84JmMowdACFenUSmXlq1Y9DGkngCv6%2Fq3Azxmo%3D&reserved=0)
+#### **At ingestion time**
+Data will arrive to LA WS and will be filtered out
+
+[Custom data ingestion and transformation in Microsoft Sentinel (preview) | Microsoft Docs](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fazure%2Fsentinel%2Fdata-transformation&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7C7843da3d315c4e7456ef08da956a0011%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637986579758910924%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=xiOy8U5a4OyIqr85R721IZpIq6rbTsN4tM%2BbNs5tHZI%3D&reserved=0)
+### **How to View ingested Logs** 
+## **Data Retention options**
+As Azure Sentinel is solution on top of Log Analytics, we effectively defining this here. When you enable Azure Sentinel you are entitled for 90 retention without extra cost.
+
+` `Beyond 90 days, we have couple of options:
+
+1. [preferred way] Retention policy and archiving, [Configure data retention and archive in Azure Monitor Logs (Preview) - Azure Monitor | Microsoft Docs](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fazure%2Fazure-monitor%2Flogs%2Fdata-retention-archive%3Ftabs%3Dportal-1%252Cportal-2&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7C7843da3d315c4e7456ef08da956a0011%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637986579758910924%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=wUeWh6jvUPXz%2FY%2BnO6VX14AreTYZBF4d8PfooM5A2ws%3D&reserved=0)
+   1. Retention policy can be different for each table
+   1. Archiving is set on table level
+1. Archiving to storage account, [Archive data from Log Analytics workspace to Azure storage using Logic App - Azure Monitor | Microsoft Docs](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fazure%2Fazure-monitor%2Flogs%2Flogs-export-logic-app&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7C7843da3d315c4e7456ef08da956a0011%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637986579758910924%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=m43anuJc%2FB8961rZ7I5WRGA8OZxnTgZlaU4MGhhKu6c%3D&reserved=0)
+   1. There is a logic app that pulls data from LAWS and sends it to storage account
+   1. One downside it that searching data stored in storage account is more complex
+1. Sending data to Azure Data Explorer, [Using Azure Data Explorer for long term retention of Microsoft Sentinel logs - Microsoft Tech Community](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftechcommunity.microsoft.com%2Ft5%2Fmicrosoft-sentinel-blog%2Fusing-azure-data-explorer-for-long-term-retention-of-microsoft%2Fba-p%2F1883947&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7C7843da3d315c4e7456ef08da956a0011%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637986579758910924%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=GKgAp3lBZOLhtRe%2BhWWQ%2F92ZSxmnxOrjzPT489Od7so%3D&reserved=0)
+
+Analytics Rules with FastTrack
+
+Analyse the inbuilt rules shipped
+
+should we review what connectors are implemented?
+
+disable new rule built?
+
+Use what we have out of the box and then create.
+
+No analytic rules needed for MS Defender. As “Connect Microsoft 365 Defender​ incidents to your Microsoft Sentinel. Incidents will appear in the incidents queue.“
+# **Design Decisions**
+
+||**Decision**|**By Whom**|**Date**|
+| :-: | :-: | :-: | :-: |
+|1|Use four log sources for ver 1.0|Daniel, Deborah, Haseeb|20-07-2022|
+|2|Cloud native connections for log ingestion, not private network||07-08-2022|
+|3|Use a dedicated subscription, test in AzureSimple for Unilabs Group||07-08-2022|
+|4|Nomenclature in Azure|<p>Weu-T-VMs-SEN1</p><p>location-env-resourcetype-object</p>|07-08-2022|
+|5|Tagging guide to use?|<p>owner = jsmith</p><p>confidentiality = private<br><br>env = dev</p>|07-08-2022|
+|6|Segregate operational and security date, Azure dedicated workspace between for operational and security data?|To be discussed|07-08-2022|
+|7|Azure Regions, keeping data in a particular geography, then create a separate workspace for each region with such requirements.|To be discussed|07-08-2022|
+|8|Data ownership, create separate workspaces to define data ownership, eg example by subsidiaries or affiliated companies.|To be discussed|07-08-2022|
+|9|Access control, roles and permissions?|To be discussed|07-08-2022|
+|10|Size of NSS VM has 2 vCPUs and 8GB memory, Standard\_A4\_v2. Is this adequate?|To be discussed|03-09-2022|
+|11|Size of Dataconnector VM. Is this adequate?|To be discussed|03-09-2022|
+|12|<p>Do we need an event hub or data collector in the design?</p><p>Impact? Cost?</p><p>It was recommended by FastTrack not to use a data hub at this time. The justification for this is logs can be filtered out at ingestion time for now.</p>|FastTrack meeting|13/09/2022|
+|13|Include log sources to include Defender 365. Justification:<br>Provide information for a number of use cases for instance repeat login failures relating to Ransomware.|HC and DP|97/09/2022|
+# **Risks / Issues**
+
+|**Issues/Risk**|**Status**|**Date**|
+| :-: | :-: | :-: |
+|What will be log retention policy? Default is 90 days.|||
+|<p>Using an automated deployment method has been challenged by Prociso. It has been suggested it will be replaced and provides no value if there are are no associated mature security controls such as code scanning.</p><p>[Recommendation from Microsoft is to use automation and Terraform](https://azure.microsoft.com/mediahandler/files/resourcefiles/azure-sentinel-deployment-guide/Microsoft_Azure%20Sentinel_Managed_Sentinel_Deployment_Guide.pdf).<br>Manual. Using the Azure portal, the administrator manually configures the Azure Sentinel resources. *Any manual process has the inherent risks of human operator error, lack of compliance with potential change control procedures, and undocumented changes. Automation tools**.** Azure Sentinel resources support AsCode tools, such as Hashicorp Terraform, that can provide consistency to processes.*</p>|||
+|Tighten NSGs for VMs installed in Azure|Needs to be done||
+|Apply SSH keys for two VMs: VM Data connector and AzureNSS. At moment is ssh and strong password|Needs to be done||
+|Unanticipated costs from Azure Sentinel? |||
+# **Definitions**
+
+|**Term**|**Definition**|
+| :-: | :-: |
+|Group Log source||
+|||
+# **References**
+
+|**Document**|**Link**|**Author**|**Topic**|
+| :-: | :-: | :-: | :-: |
+|Azure Sentinel Deployment Guide|[https://azure.microsoft.com/mediahandler/files/resourcefiles/azure-sentinel-deployment-guide/Microsoft_Azure Sentinel_Managed_Sentinel_Deployment_Guide.pdf](https://azure.microsoft.com/mediahandler/files/resourcefiles/azure-sentinel-deployment-guide/Microsoft_Azure%20Sentinel_Managed_Sentinel_Deployment_Guide.pdf)|Microsoft||
+|Microsoft Quickstart Guide|<https://docs.microsoft.com/en-us/azure/sentinel/quickstart-onboard>|Microsoft||
+|Design a Log Analytics workspace architecture|<https://docs.microsoft.com/en-us/azure/azure-monitor/logs/workspace-design>|Microsoft||
+|Resource naming and tagging decision guide|<https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/decision-guides/resource-tagging/>|Microsoft||
+|Get fine-tuning recommendations for your analytics rules in Microsoft Sentinel|<https://docs.microsoft.com/en-us/azure/sentinel/detection-tuning>|Microsoft|Azure Sentinel Fine Tuning|
+|Create custom analytics rules to detect threats|<https://docs.microsoft.com/en-us/azure/sentinel/detect-threats-custom>|Deploying ARM Templates with Terraform|Azure Sentinel custom analytics rules|
+|Quickstart: Onboard Microsoft Sentinel|<https://docs.microsoft.com/en-us/azure/sentinel/quickstart-onboard>|Microsoft|Sentinel Quickstart|
+|Zscaler|<https://help.zscaler.com/zia/zscaler-microsoft-azure-sentinel-deployment-guide>|Zscaler from Sergy|Zscaler|
+|Zscaler with Sentinel Detailed|<https://help.zscaler.com/zia/nss-deployment-guide-microsoft-azure>|Zscaler from Sergy||
+|Zscaler Sentinel integration|<https://community.zscaler.com/t/guide-deploy-zscaler-nss-in-azure/8571>|Community Zscaler||
+|Sentinel Overall Documentation|<https://docs.microsoft.com/en-gb/azure/sentinel/>|Microsoft||
+|||||
+|Sentinel Documentation General|- [Microsoft Sentinel documentation | Microsoft Docs](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.microsoft.com%2Fen-gb%2Fazure%2Fsentinel%2F&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7Cb37f766f966c450368f408da8f50bbd2%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637979874159819595%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=29%2BJfRrbg8p8Q4Q045tGK2DL46ijyWIAT7JT5ZLAwrk%3D&reserved=0)|Microsoft||
+|Sentinel Pricing Docs |<p>- [Azure Sentinel Pricing | Microsoft Azure](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fazure.microsoft.com%2Fen-us%2Fpricing%2Fdetails%2Fmicrosoft-sentinel%2F&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7Cb37f766f966c450368f408da8f50bbd2%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637979874159819595%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=TAghdWI7N%2B8niHn6hs33jjOePEFWDeoL27l6lYPvN1o%3D&reserved=0)</p><p>- [Plan costs, understand Microsoft Sentinel pricing and billing | Microsoft Docs](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.microsoft.com%2Fen-gb%2Fazure%2Fsentinel%2Fbilling%3Ftabs%3Dcommitment-tier&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7Cb37f766f966c450368f408da8f50bbd2%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637979874159819595%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=yP%2FKt1uNDeVs6N7zjechWaYLwQCuzqbV9KOynpTxoFA%3D&reserved=0)</p><p>- [Cost Management + Billing - Microsoft Cost Management | Microsoft Docs](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fazure%2Fcost-management-billing%2F&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7Cb37f766f966c450368f408da8f50bbd2%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637979874159819595%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=hhg2E7bPRt4vHmBYf4d5tX%2FkV9%2F1WaMtvzFolibMEik%3D&reserved=0)</p><p>- [Tutorial - Create and manage Azure budgets | Microsoft Docs](https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fazure%2Fcost-management-billing%2Fcosts%2Ftutorial-acm-create-budgets&data=05%7C01%7Chaseeb.chaudhary%40unilabs.com%7Cb37f766f966c450368f408da8f50bbd2%7C30a5585b3b79491abc1e5cfe51faf766%7C0%7C0%7C637979874159819595%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=4jc%2BKXtTml%2BT00W0zmeedV4QscAiU2VFCgbUYjjWwWg%3D&reserved=0)</p>|Microsoft|Sentinel Pricing|
+|Mapping threat to tech environments |<https://docs.microsoft.com/en-gb/azure/architecture/solution-ideas/articles/map-threats-it-environment>||Use case development|
+|||||
+|||||
+
